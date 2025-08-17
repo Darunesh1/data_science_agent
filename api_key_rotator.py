@@ -14,7 +14,7 @@ api_key5 = os.getenv("GENAI_API_KEY_5")
 api_key6 = os.getenv("GENAI_API_KEY_6")
 API_KEYS  = []
 
-for api_key in [api_key1, api_key2, api_key3]:
+for api_key in [api_key1, api_key2, api_key3, api_key4, api_key5, api_key6]:
     if api_key:
         print("API Key found:", api_key)
         API_KEYS.append({"key": api_key, "req_timestamps": []})        
