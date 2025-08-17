@@ -72,15 +72,18 @@ async def run_python_code(code: str, libraries: List[str], folder: str = "upload
                 if install_result.returncode == 0:
                     log_to_file(f"✅ Successfully installed {lib}")
                 else:
-                    # Fallback to pip if uv fails
-                    log_to_file(f"⚠️ uv failed, trying pip for {lib}...")
-                    pip_result = subprocess.run(
-                        [python_exec, "-m", "pip", "install", lib],
+                    # Fallback to uv pip if uv add fails
+                    log_to_file(f"⚠️ uv add failed, trying uv pip for {lib}...")
+                    uv_pip_result = subprocess.run(
+                        ["uv", "pip", "install", lib],
                         capture_output=True,
-                        text=True
+                        text=True,
+                        cwd=project_root
                     )
-                    if pip_result.returncode != 0:
-                        raise Exception(f"Both uv and pip failed: {install_result.stderr} | {pip_result.stderr}")
+                    if uv_pip_result.returncode != 0:
+                        raise Exception(f"Both uv add and uv pip failed: {install_result.stderr} | {uv_pip_result.stderr}")
+                    else:
+                        log_to_file(f"✅ Successfully installed {lib} with uv pip")
             else:
                 log_to_file(f"✅ {lib} already installed.")
                 

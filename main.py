@@ -75,8 +75,7 @@ def strip_base64_from_json(data: dict) -> dict:
 # Pre-created venv paths (point to the python executable inside each venv)
 VENV_PATHS = [
     ".venv/bin/python3",
-    "venv1/bin/python3",
-    "venv2/bin/python3"
+    
 ]
 
 venv_cycle = itertools.cycle(VENV_PATHS)
