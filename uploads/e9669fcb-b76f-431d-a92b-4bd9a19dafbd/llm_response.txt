@@ -1,0 +1,16 @@
+{
+    "code": "import pandas as pd\nimport os\nimport io\nimport sys\n\noutput_dir = 'uploads/e9669fcb-b76f-431d-a92b-4bd9a19dafbd'\ninput_csv_path = 'uploads/e9669fcb-b76f-431d-a92b-4bd9a19dafbd/sample-weather.csv'\ndata_csv_path = os.path.join(output_dir, 'data.csv')\nmetadata_txt_path = os.path.join(output_dir, 'metadata.txt')\n\nos.makedirs(output_dir, exist_ok=True)\n\ndf = pd.read_csv(input_csv_path)\n\ndf.to_csv(data_csv_path, index=False)\n\nmetadata_content = \"\"\n\nmetadata_content += f\"File: {data_csv_path}\\n\"\nmetadata_content += \"Description: This file contains the raw weather data loaded from sample-weather.csv.\\n\\n\"\n\nbuffer = io.StringIO()\nsys.stdout = buffer\ndf.info()\nsys.stdout = sys.__stdout__\nmetadata_content += \"DataFrame Info:\\n\"\nmetadata_content += buffer.getvalue()\nmetadata_content += \"\\n\"\n\nmetadata_content += \"DataFrame Columns:\\n\"\nmetadata_content += str(df.columns.tolist())\nmetadata_content += \"\\n\\n\"\n\nmetadata_content += \"DataFrame Head:\\n\"\nmetadata_content += df.head().to_string()\nmetadata_content += \"\\n\\n\"\n\nmetadata_content += \"Expected JSON Answer Format:\\n\"\nmetadata_content += \"{\\n\"\nmetadata_content += \"  \\\"average_temp_c\\\": \\\"number\\\",\\n\"\nmetadata_content += \"  \\\"max_precip_date\\\": \\\"string\\\",\\n\"\nmetadata_content += \"  \\\"min_temp_c\\\": \\\"number\\\",\\n\"\nmetadata_content += \"  \\\"temp_precip_correlation\\\": \\\"number\\\",\\n\"\nmetadata_content += \"  \\\"average_precip_mm\\\": \\\"number\\\",\\n\"\nmetadata_content += \"  \\\"temp_line_chart\\\": \\\"base64 PNG string under 100kB\\\",\\n\"\nmetadata_content += \"  \\\"precip_histogram\\\": \\\"base64 PNG string under 100kB\\\"\\n\"\nmetadata_content += \"}\\n\"\n\nwith open(metadata_txt_path, 'w') as f:\n    f.write(metadata_content)\n",
+    "libraries": [
+        "pandas"
+    ],
+    "questions": [
+        "What is the average temperature in Celsius?",
+        "On which date was precipitation highest?",
+        "What is the minimum temperature recorded?",
+        "What is the correlation between temperature and precipitation?",
+        "What is the average precipitation in millimeters?",
+        "Plot temperature over time as a line chart with a red line. Encode as base64 PNG.",
+        "Plot precipitation as a histogram with orange bars. Encode as base64 PNG."
+    ],
+    "comment": "Step-3: Getting scrap code and metadata from llm. Tries count = %d 0"
+}

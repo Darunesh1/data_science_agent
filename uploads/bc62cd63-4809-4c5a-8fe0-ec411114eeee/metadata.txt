@@ -1,0 +1,42 @@
+{
+  "file_name": "edges.csv",
+  "description": "Undirected network edges data used for graph analysis.",
+  "source_path": "uploads/bc62cd63-4809-4c5a-8fe0-ec411114eeee/edges.csv",
+  "saved_data_path": "uploads/bc62cd63-4809-4c5a-8fe0-ec411114eeee/data.csv",
+  "dataframe_info": "<class 'pandas.core.frame.DataFrame'>\nRangeIndex: 7 entries, 0 to 6\nData columns (total 2 columns):\n #   Column  Non-Null Count  Dtype \n---  ------  --------------  ----- \n 0   source  7 non-null      object\n 1   target  7 non-null      object\ndtypes: object(2)\nmemory usage: 244.0+ bytes\n",
+  "dataframe_columns": [
+    "source",
+    "target"
+  ],
+  "dataframe_head": [
+    {
+      "source": "Alice",
+      "target": "Bob"
+    },
+    {
+      "source": "Alice",
+      "target": "Carol"
+    },
+    {
+      "source": "Bob",
+      "target": "Carol"
+    },
+    {
+      "source": "Bob",
+      "target": "David"
+    },
+    {
+      "source": "Bob",
+      "target": "Eve"
+    }
+  ],
+  "json_answer_format": {
+    "edge_count": "number",
+    "highest_degree_node": "string",
+    "average_degree": "number",
+    "density": "number",
+    "shortest_path_alice_eve": "number",
+    "network_graph": "base64 PNG string under 100kB",
+    "degree_histogram": "base64 PNG string under 100kB"
+  }
+}

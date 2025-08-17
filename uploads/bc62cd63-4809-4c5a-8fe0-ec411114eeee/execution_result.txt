@@ -1,0 +1,246 @@
+
+[2025-08-13 14:18:21]
+📜 Executing Code:
+import os
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+import io
+import base64
+import json
+from io import StringIO
+
+# Define paths
+output_dir = "uploads/bc62cd63-4809-4c5a-8fe0-ec411114eeee"
+edges_path = os.path.join(output_dir, "edges.csv")
+data_csv_path = os.path.join(output_dir, "data.csv")
+metadata_path = os.path.join(output_dir, "metadata.txt")
+
+# Create output directory if it doesn't exist
+os.makedirs(output_dir, exist_ok=True)
+
+# --- Metadata Collection ---
+# Read the edges.csv file
+df = pd.read_csv(edges_path)
+
+# Save a copy of the dataframe as data.csv as specified
+df.to_csv(data_csv_path, index=False)
+
+# Collect metadata
+metadata_content = {}
+metadata_content["file_name"] = "edges.csv"
+metadata_content["description"] = (
+    "Undirected network edges data used for graph analysis."
+)
+metadata_content["source_path"] = edges_path
+metadata_content["saved_data_path"] = data_csv_path
+
+# Capture df.info() output
+buffer_info = StringIO()
+df.info(buf=buffer_info)
+metadata_content["dataframe_info"] = buffer_info.getvalue()
+
+metadata_content["dataframe_columns"] = df.columns.tolist()
+metadata_content["dataframe_head"] = df.head().to_dict("records")
+metadata_content["json_answer_format"] = {
+    "edge_count": "number",
+    "highest_degree_node": "string",
+    "average_degree": "number",
+    "density": "number",
+    "shortest_path_alice_eve": "number",
+    "network_graph": "base64 PNG string under 100kB",
+    "degree_histogram": "base64 PNG string under 100kB",
+}
+
+# Write metadata to metadata.txt
+with open(metadata_path, "w") as f:
+    json.dump(metadata_content, f, indent=2)
+
+# --- Network Analysis ---
+
+# Create graph
+# Assuming the first two columns are source and target nodes
+G = nx.from_pandas_edgelist(df, source=df.columns[0], target=df.columns[1])
+
+# Calculate metrics
+edge_count = G.number_of_edges()
+num_nodes = G.number_of_nodes()
+
+# Highest degree node
+degrees = dict(G.degree())
+highest_degree_node = max(degrees, key=degrees.get) if degrees else None
+
+# Average degree
+total_degrees = sum(degrees.values())
+average_degree = total_degrees / num_nodes if num_nodes > 0 else 0
+
+# Density
+density = nx.density(G)
+
+# Shortest path between Alice and Eve
+shortest_path_alice_eve = None
+if "Alice" in G and "Eve" in G:
+    try:
+        shortest_path_alice_eve = nx.shortest_path_length(
+            G, source="Alice", target="Eve"
+        )
+    except nx.NetworkXNoPath:
+        shortest_path_alice_eve = None
+
+# Generate network graph PNG
+plt.figure(figsize=(8, 6))
+pos = nx.spring_layout(G, k=0.15)  # positions for all nodes
+nx.draw_networkx(
+    G,
+    pos,
+    with_labels=True,
+    node_color="skyblue",
+    node_size=1000,
+    font_size=9,
+    font_weight="bold",
+    edge_color="gray",
+)
+plt.title("Network Graph")
+plt.axis("off")  # Hide axes
+graph_buf = io.BytesIO()
+plt.savefig(
+    graph_buf, format="png", bbox_inches="tight", dpi=100
+)  # Save with reasonable DPI for size
+plt.close()  # Close the plot to free memory
+network_graph_base64 = base64.b64encode(graph_buf.getvalue()).decode("utf-8")
+
+# Generate degree histogram PNG
+degree_sequence = [d for n, d in G.degree()]
+degree_histogram_base64 = ""
+if degree_sequence:
+    plt.figure(figsize=(7, 5))
+    bins = (
+        range(min(degree_sequence), max(degree_sequence) + 2)
+        if degree_sequence
+        else [0, 1]
+    )
+    plt.hist(degree_sequence, bins=bins, align="left", rwidth=0.8, color="green")
+    plt.title("Degree Distribution")
+    plt.xlabel("Degree")
+    plt.ylabel("Number of Nodes")
+    if degree_sequence:
+        plt.xticks(range(min(degree_sequence), max(degree_sequence) + 1))
+    degree_hist_buf = io.BytesIO()
+    plt.savefig(
+        degree_hist_buf, format="png", bbox_inches="tight", dpi=100
+    )  # Save with reasonable DPI
+    plt.close()  # Close the plot
+    degree_histogram_base64 = base64.b64encode(degree_hist_buf.getvalue()).decode(
+        "utf-8"
+    )
+
+# Prepare the final JSON output
+result = {
+    "edge_count": edge_count,
+    "highest_degree_node": highest_degree_node,
+    "average_degree": average_degree,
+    "density": density,
+    "shortest_path_alice_eve": shortest_path_alice_eve,
+    "network_graph": network_graph_base64,
+    "degree_histogram": degree_histogram_base64,
+}
+
+# Print the final result dictionary as a JSON string
+print(json.dumps(result))
+
+----------------------------------------
+
+[2025-08-13 14:18:21]
+✅ Code executed successfully after installing libraries.
+----------------------------------------
+
+[2025-08-13 14:18:35]
+📜 Executing Code:
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+import io
+import base64
+import json
+
+df = pd.read_csv("uploads/bc62cd63-4809-4c5a-8fe0-ec411114eeee/edges.csv")
+
+G = nx.from_pandas_edgelist(df, "source", "target", create_using=nx.Graph())
+
+edge_count = G.number_of_edges()
+
+degrees = dict(G.degree())
+highest_degree_node = max(degrees, key=degrees.get)
+
+sum_of_degrees = sum(dict(G.degree()).values())
+num_nodes = G.number_of_nodes()
+average_degree = sum_of_degrees / num_nodes if num_nodes > 0 else 0
+
+density = nx.density(G)
+
+try:
+    shortest_path_alice_eve = nx.shortest_path_length(G, source="Alice", target="Eve")
+except (nx.NetworkXNoPath, nx.NodeNotFound):
+    shortest_path_alice_eve = None
+
+plt.figure(figsize=(8, 6))
+pos = nx.spring_layout(G)
+nx.draw(
+    G,
+    pos,
+    with_labels=True,
+    node_color="skyblue",
+    node_size=2000,
+    edge_color="gray",
+    font_size=10,
+    font_weight="bold",
+)
+plt.title("Network Graph")
+plt.tight_layout()
+buf1 = io.BytesIO()
+plt.savefig(buf1, format="png", bbox_inches="tight", pad_inches=0.1)
+plt.close()
+network_graph_base64 = base64.b64encode(buf1.getvalue()).decode("utf-8")
+buf1.close()
+
+degree_sequence = sorted([d for n, d in G.degree()], reverse=True)
+degree_counts = {}
+for degree in degree_sequence:
+    degree_counts[degree] = degree_counts.get(degree, 0) + 1
+
+degrees_plot = list(degree_counts.keys())
+counts_plot = list(degree_counts.values())
+
+plt.figure(figsize=(8, 6))
+plt.bar(degrees_plot, counts_plot, color="green")
+plt.title("Degree Distribution")
+plt.xlabel("Degree")
+plt.ylabel("Number of Nodes")
+plt.xticks(degrees_plot)
+plt.grid(axis="y", linestyle="--", alpha=0.7)
+plt.tight_layout()
+buf2 = io.BytesIO()
+plt.savefig(buf2, format="png", bbox_inches="tight", pad_inches=0.1)
+plt.close()
+degree_histogram_base64 = base64.b64encode(buf2.getvalue()).decode("utf-8")
+buf2.close()
+
+result = {
+    "edge_count": edge_count,
+    "highest_degree_node": highest_degree_node,
+    "average_degree": average_degree,
+    "density": density,
+    "shortest_path_alice_eve": shortest_path_alice_eve,
+    "network_graph": network_graph_base64,
+    "degree_histogram": degree_histogram_base64,
+}
+
+output_path = "uploads/bc62cd63-4809-4c5a-8fe0-ec411114eeee/result.json"
+with open(output_path, "w") as f:
+    json.dump(result, f, indent=4)
+
+----------------------------------------
+
+[2025-08-13 14:18:35]
+✅ Code executed successfully after installing libraries.
+----------------------------------------
