@@ -1,7 +1,0 @@
-fastapi
-aiofiles
-google-generativeai
-black
-uvicorn
-pyngrok
-python-multipart
