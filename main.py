@@ -74,7 +74,7 @@ def strip_base64_from_json(data: dict) -> dict:
 
 # Pre-created venv paths (point to the python executable inside each venv)
 VENV_PATHS = [
-    "venv/bin/python3",
+    ".venv/bin/python3",
     "venv1/bin/python3",
     "venv2/bin/python3"
 ]
@@ -154,7 +154,7 @@ async def analyze(request: Request):
 I know nothing about data analytics. To solve my question, follow this exact process:
 
 ### Step 1:
-I will give you a question statement with possible data sources (URL, CSV, database, etc.).  
+I will give you a question statement with possible data sources (URL, CSV, database, etc.).
 Your first task: generate code that extracts **basic info** about the data source:
 - URL → Scrape and summarize tables, headings, and important structures. Keep summary under 100 tokens.
 - CSV/Excel → Return first 3 rows.
@@ -165,13 +165,13 @@ Your first task: generate code that extracts **basic info** about the data sourc
 Download or extract the required data and save it in {request_folder}.
 
 ### Step 3:
-I will pass you the collected info from {request_folder}/metadata.txt.  
+I will pass you the collected info from {request_folder}/metadata.txt.
 Then, generate code to solve the question fully and save the **final answer** in {request_folder}/result.txt (or result.json if the format is structured).
 
 ### Step 4:
-I will give you the content of {request_folder}/result.txt.  
-- If correct → mark `run_this=0`.  
-- If wrong → provide corrected code to recompute the answer.  
+I will give you the content of {request_folder}/result.txt.
+- If correct → mark `run_this=0`.
+- If wrong → provide corrected code to recompute the answer.
 
 ### Error Handling:
 If I give you an error message:
@@ -181,26 +181,25 @@ If I give you an error message:
 ### Output Format:
 You must always answer in **valid JSON** like this:
 {{
-    "code": "<python_code_here>",
+    "code": "",
     "libraries": ["list", "of", "external_libraries"],
     "run_this": 1 or 0
 }}
 
 ### Additional Rules:
-- Save extracted info into {request_folder}/metadata.txt (append mode).  
-- Save final answers in {request_folder}/result.txt (or {request_folder}/result.json if structured).  
-- Always prepend file access with {request_folder}/filename.  
-- Use only necessary pip-installable external libraries.  
+- Save extracted info into {request_folder}/metadata.txt (append mode).
+- Save final answers in {request_folder}/result.txt (or {request_folder}/result.json if structured).
+- Always prepend file access with {request_folder}/filename.
+- Use only necessary uv-compatible external libraries.
 
 Example Output: if asked to send a JSON like this:
-["What is the meadian of data", "What is mean", "provide base64 image"]
+["What is the median of data", "What is mean", "provide base64 image"]
 
 Then, send result like this:
+[20, 25, "base64 image url here"]
 
-[20, 25, "base64 image  url here"]
 I mean don't send answers like key:answer, unless it is specified.
 """
-
 
     question_text = str("<question>") +  question_text+ "</question>"  + str(user_prompt)
     logger.info("Step-2: File sent %s", saved_files)
